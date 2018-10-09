@@ -1,0 +1,13 @@
+A nested loop means loop within loop. You can break out of a certain number of levels in a nested loop by adding break n statement. n is the number of levels of nesting. For example, following code will break out the second done statement: 
+ ...
+   for i in something
+   do
+      while true
+      do
+         cmd1
+         cmd2
+         [ condition ] && break 2
+      done
+   done
+   ....
+   ..

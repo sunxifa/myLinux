@@ -1,0 +1,92 @@
+EXPAND(1)			 User Commands			     EXPAND(1)
+
+
+
+NAME
+       expand - convert tabs to spaces
+
+SYNOPSIS
+       expand [OPTION]... [FILE]...
+
+DESCRIPTION
+       Convert	tabs in each FILE to spaces, writing to standard output.  With
+       no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are	mandatory  for	short  options
+       too.
+
+       -i, --initial
+	      do not convert tabs after non blanks
+
+       -t, --tabs=NUMBER
+	      have tabs NUMBER characters apart, not 8
+
+       -t, --tabs=LIST
+	      use comma separated list of explicit tab positions
+
+       --help display this help and exit
+
+       --version
+	      output version information and exit
+
+AUTHOR
+       Written by David MacKenzie.
+
+REPORTING BUGS
+       Report expand bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report expand translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright © 2010 Free Software Foundation, Inc.	 License  GPLv3+:  GNU
+       GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
+       This  is	 free  software:  you  are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       unexpand(1)
+
+       The full documentation for expand is maintained as  a  Texinfo  manual.
+       If  the	info  and expand programs are properly installed at your site,
+       the command
+
+	      info coreutils 'expand invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.4		   May 2011			     EXPAND(1)
+
+
+
+[root@www ~]# expand [-t] file
+选项与参数：
+-t  ：后面可以接数字。一般来说，一个 tab 按键可以用 8 个空格键取代。
+      我们也可以自行定义一个 [tab] 按键代表多少个字符呢！
+
+范例一：将 /etc/man.config 内行首为 MANPATH 的字样就取出；仅取前三行；
+[root@www ~]# grep '^MANPATH' /etc/man.config | head -n 3
+MANPATH /usr/man
+MANPATH /usr/share/man
+MANPATH /usr/local/man
+# 行首的代表标志为 ^ ，这个我们留待下节介绍！先有概念即可！
+
+范例二：承上，如果我想要将所有的符号都列出来？(用 cat)
+[root@www ~]# grep '^MANPATH' /etc/man.config | head -n 3 |cat -A
+MANPATH^I/usr/man$
+MANPATH^I/usr/share/man$
+MANPATH^I/usr/local/man$
+# 发现差别了吗？没错～ [tab] 按键可以被 cat -A 显示成为 ^I 
+
+范例三：承上，我将 [tab] 按键配置成 6 个字符的话？
+[root@www ~]# grep '^MANPATH' /etc/man.config | head -n 3 | \
+>  expand -t 6 - | cat -A
+MANPATH     /usr/man$
+MANPATH     /usr/share/man$
+MANPATH     /usr/local/man$
+123456123456123456.....
+# 仔细看一下上面的数字说明，因为我是以 6 个字符来代表一个 [tab] 的长度，所以，
+# MAN... 到 /usr 之间会隔 12 (两个 [tab]) 个字符喔！如果 tab 改成 9 的话，
+# 情况就又不同了！这里也不好理解～您可以多配置几个数字来查阅就晓得！

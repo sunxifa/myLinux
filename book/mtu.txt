@@ -1,0 +1,4 @@
+for host in `sed -n '5,25p'  /etc/hosts | grep -v registry|awk '{print $2}'`;do 
+echo -e "\033[31m\n#####$host######\033[0m"
+ssh  $host "ip -o  l | sed 's/[0-9][0-9]: //' |grep -E '(^qbr|^qvo|^qvb|^tap)'|cut -b1-14| xargs -i  ip -d l show dev {} | grep 1450"
+done

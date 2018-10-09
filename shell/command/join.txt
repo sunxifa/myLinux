@@ -1,0 +1,149 @@
+JOIN(1)				 User Commands			       JOIN(1)
+
+
+
+NAME
+       join - join lines of two files on a common field
+
+SYNOPSIS
+       join [OPTION]... FILE1 FILE2
+
+DESCRIPTION
+       For  each  pair of input lines with identical join fields, write a line
+       to standard output.  The default join field is the first, delimited  by
+       whitespace.   When FILE1 or FILE2 (not both) is -, read standard input.
+
+       -a FILENUM
+	      print unpairable lines coming from file FILENUM,	where  FILENUM
+	      is 1 or 2, corresponding to FILE1 or FILE2
+
+       -e EMPTY
+	      replace missing input fields with EMPTY
+
+       -i, --ignore-case
+	      ignore differences in case when comparing fields
+
+       -j FIELD
+	      equivalent to ‘-1 FIELD -2 FIELD’
+
+       -o FORMAT
+	      obey FORMAT while constructing output line
+
+       -t CHAR
+	      use CHAR as input and output field separator
+
+       -v FILENUM
+	      like -a FILENUM, but suppress joined output lines
+
+       -1 FIELD
+	      join on this FIELD of file 1
+
+       -2 FIELD
+	      join on this FIELD of file 2
+
+       --check-order
+	      check  that  the	input  is  correctly sorted, even if all input
+	      lines are pairable
+
+       --nocheck-order
+	      do not check that the input is correctly sorted
+
+       --help display this help and exit
+
+       --version
+	      output version information and exit
+
+       Unless -t CHAR  is  given,  leading  blanks  separate  fields  and  are
+       ignored,	 else fields are separated by CHAR.  Any FIELD is a field num-
+       ber counted from 1.  FORMAT is one or more  comma  or  blank  separated
+       specifications, each being ‘FILENUM.FIELD’ or ‘0’.  Default FORMAT out-
+       puts the join field, the remaining fields  from	FILE1,	the  remaining
+       fields from FILE2, all separated by CHAR.
+
+       Important:  FILE1  and  FILE2 must be sorted on the join fields.	 E.g.,
+       use ‘sort -k 1b,1’ if ‘join’ has no options.  Note,  comparisons	 honor
+       the  rules  specified  by ‘LC_COLLATE’.	If the input is not sorted and
+       some lines cannot be joined, a warning message will be given.
+
+AUTHOR
+       Written by Mike Haertel.
+
+REPORTING BUGS
+       Report join bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report join translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright © 2010 Free Software Foundation, Inc.	 License  GPLv3+:  GNU
+       GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
+       This  is	 free  software:  you  are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       comm(1), uniq(1)
+
+       The full documentation for join is maintained as a Texinfo manual.   If
+       the  info  and  join  programs are properly installed at your site, the
+       command
+
+	      info coreutils 'join invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.4		   May 2011			       JOIN(1)
+
+
+join 看字面上的意義 (加入/參加) 就可以知道，他是在處理兩個檔案之間的資料， 
+而且，主要是在處理『兩個檔案當中，有 "相同資料" 的那一行，才將他加在一起』的意思。
+
+[dmtsai@study ~]$ join [-ti12] file1 file2
+選項與參數：
+-t  ：join 預設以空白字元分隔資料，並且比對『第一個欄位』的資料，
+      如果兩個檔案相同，則將兩筆資料聯成一行，且第一個欄位放在第一個！
+-i  ：忽略大小寫的差異；
+-1  ：這個是數字的 1 ，代表『第一個檔案要用那個欄位來分析』的意思；
+-2  ：代表『第二個檔案要用那個欄位來分析』的意思。
+
+範例一：用 root 的身份，將 /etc/passwd 與 /etc/shadow 相關資料整合成一欄
+[root@study ~]# head -n 3 /etc/passwd /etc/shadow
+==> /etc/passwd <==
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+
+==> /etc/shadow <==
+root:$6$wtbCCce/PxMeE5wm$KE2IfSJr...:16559:0:99999:7:::
+bin:*:16372:0:99999:7:::
+daemon:*:16372:0:99999:7:::
+# 由輸出的資料可以發現這兩個檔案的最左邊欄位都是相同帳號！且以 : 分隔
+
+[root@study ~]# join -t ':' /etc/passwd /etc/shadow | head -n 3
+root:x:0:0:root:/root:/bin/bash:$6$wtbCCce/PxMeE5wm$KE2IfSJr...:16559:0:99999:7:::
+bin:x:1:1:bin:/bin:/sbin/nologin:*:16372:0:99999:7:::
+daemon:x:2:2:daemon:/sbin:/sbin/nologin:*:16372:0:99999:7:::
+# 透過上面這個動作，我們可以將兩個檔案第一欄位相同者整合成一列！
+# 第二個檔案的相同欄位並不會顯示(因為已經在最左邊的欄位出現了啊！)
+
+範例二：我們知道 /etc/passwd 第四個欄位是 GID ，那個 GID 記錄在 
+        /etc/group 當中的第三個欄位，請問如何將兩個檔案整合？
+[root@study ~]# head -n 3 /etc/passwd /etc/group
+==> /etc/passwd <==
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+
+==> /etc/group <==
+root:x:0:
+bin:x:1:
+daemon:x:2:
+# 從上面可以看到，確實有相同的部分喔！趕緊來整合一下！
+
+[root@study ~]# join -t ':' -1 4 /etc/passwd -2 3 /etc/group | head -n 3
+0:root:x:0:root:/root:/bin/bash:root:x:
+1:bin:x:1:bin:/bin:/sbin/nologin:bin:x:
+2:daemon:x:2:daemon:/sbin:/sbin/nologin:daemon:x:
+# 同樣的，相同的欄位部分被移動到最前面了！所以第二個檔案的內容就沒再顯示。
+# 請讀者們配合上述顯示兩個檔案的實際內容來比對！

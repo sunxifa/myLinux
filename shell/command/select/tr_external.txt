@@ -1,0 +1,247 @@
+TR(1)				 User Commands				 TR(1)
+
+
+
+NAME
+       tr - translate or delete characters
+
+SYNOPSIS
+       tr [OPTION]... SET1 [SET2]
+
+DESCRIPTION
+       Translate, squeeze, and/or delete characters from standard input, writ-
+       ing to standard output.
+
+       -c, -C, --complement
+	      use the complement of SET1
+
+       -d, --delete
+	      delete characters in SET1, do not translate
+
+       -s, --squeeze-repeats
+	      replace each input sequence of  a	 repeated  character  that  is
+	      listed in SET1 with a single occurrence of that character
+
+       -t, --truncate-set1
+	      first truncate SET1 to length of SET2
+
+       --help display this help and exit
+
+       --version
+	      output version information and exit
+
+       SETs  are  specified  as	 strings  of characters.  Most represent them-
+       selves.	Interpreted sequences are:
+
+       \NNN   character with octal value NNN (1 to 3 octal digits)
+
+       \\     backslash
+
+       \a     audible BEL
+
+       \b     backspace
+
+       \f     form feed
+
+       \n     new line
+
+       \r     return
+
+       \t     horizontal tab
+
+       \v     vertical tab
+
+       CHAR1-CHAR2
+	      all characters from CHAR1 to CHAR2 in ascending order
+
+       [CHAR*]
+	      in SET2, copies of CHAR until length of SET1
+
+       [CHAR*REPEAT]
+	      REPEAT copies of CHAR, REPEAT octal if starting with 0
+
+       [:alnum:]
+	      all letters and digits
+
+       [:alpha:]
+	      all letters
+
+       [:blank:]
+	      all horizontal whitespace
+
+       [:cntrl:]
+	      all control characters
+
+       [:digit:]
+	      all digits
+
+       [:graph:]
+	      all printable characters, not including space
+
+       [:lower:]
+	      all lower case letters
+
+       [:print:]
+	      all printable characters, including space
+
+       [:punct:]
+	      all punctuation characters
+
+       [:space:]
+	      all horizontal or vertical whitespace
+
+       [:upper:]
+	      all upper case letters
+
+       [:xdigit:]
+	      all hexadecimal digits
+
+       [=CHAR=]
+	      all characters which are equivalent to CHAR
+
+       Translation occurs if -d is not given and both SET1  and	 SET2  appear.
+       -t  may	be  used only when translating.	 SET2 is extended to length of
+       SET1 by repeating its last character as necessary.   Excess  characters
+       of  SET2	 are  ignored.	Only [:lower:] and [:upper:] are guaranteed to
+       expand in ascending order; used in SET2	while  translating,  they  may
+       only  be used in pairs to specify case conversion.  -s uses SET1 if not
+       translating nor deleting; else squeezing uses  SET2  and	 occurs	 after
+       translation or deletion.
+
+AUTHOR
+       Written by Jim Meyering.
+
+REPORTING BUGS
+       Report tr bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report tr translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright  ©  2010  Free Software Foundation, Inc.  License GPLv3+: GNU
+       GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
+       This is free software: you are free  to	change	and  redistribute  it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       The  full  documentation	 for tr is maintained as a Texinfo manual.  If
+       the info and tr programs are properly installed at your site, the  com-
+       mand
+
+	      info coreutils 'tr invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.4		   May 2011				 TR(1)
+
+
+
+tr指令从标准输入设备读取数据，经过字符串转译后，输出到标准输出设备。 
+通过使用 tr，您可以非常容易地实现 sed 的许多最基本功能。您可以将 tr 看作为 sed 的（极其）简化的变体：
+它可以用一个字符来替换另一个字符，或者可以完全除去一些字符。您也可以用它来除去重复字符。这就是所有 tr 所能够做的。
+
+tr用来从标准输入中通过替换或删除操作进行字符转换。tr主要用于删除文件中控制字符或进行字符转换。使用tr时要转换两个字符串：
+字符串1用于查询，字符串2用于处理各种转换。tr刚执行时，字符串1中的字符被映射到字符串2中的字符，然后转换操作开始。
+
+
+tr（translate缩写）主要用于删除文件中的控制字符，或进行字符转换。
+语法：tr [–c/d/s/t] [SET1] [SET2]
+SET1: 字符集1
+SET2：字符集2
+-c:complement，用SET2替换SET1中没有包含的字符
+-d:delete，删除SET1中所有的字符，不转换
+-s: squeeze-repeats，压缩SET1中重复的字符
+-t: truncate-set1，将SET1用SET2转换，一般缺省为-t
+ 当进行不含缩减的删除操作时只能给定一组字符串。
+
+1、去除重复的字符
+#将连续的几个相同字符压缩为一个字符
+$ echo aaacccddd | tr -s [a-z]
+acd
+$ echo aaacccddd | tr -s [abc]
+acddd
+ 
+2、删除空白行
+#删除空白行就是删除换行符/n
+#注意：这些空白行上只有回车符，没有空格符
+$ cat test.txt
+I love linux!
+                                                                                                                          
+                                                                                                                          
+Hello World!
+                                                                                                                          
+Shell is worthy to been studied
+ 
+#这里用换行符的转义字符\n
+#注意：此处用-s删除了多余的换行符，如果用-d，则会删除所有的换行符                                                                                                                          
+$ cat test.txt | tr -s ["\n"]
+I love linux!
+Hello World!
+Shell is worthy to been studied
+#也可以用八进制符\012，\012与\n都是换行符
+$ cat test.txt | tr -s "[\012]"
+I love linux!
+Hello World!
+Shell is worthy to been studied
+ 
+3、大小写相互转换
+#将语句中所有的小写字母变成大写字母,其中-t可省略
+$ echo "Hello World I Love You" |tr [-t] [a-z] [A-Z]
+HELLO WORLD I LOVE YOU
+#将语句中所有的大写字母变成小写字母
+$ echo "Hello World I Love You" |tr [A-Z] [a-z]
+hello world i love you
+#也可以利用字符类进行转换
+#[:lower:]代表小写字母，[:upper:]代表大写字母
+$ echo "Hello World I Love You" |tr [:lower:] [:upper:]
+HELLO WORLD I LOVE YOU
+ 
+4、删除指定的字符
+$ cat test.txt
+Monday     09:00
+Tuesday    09:10
+Wednesday  10:11
+Thursday   11:30
+Friday     08:00
+Saturday   07:40
+Sunday     10:00
+#现在要删除处理星期之外的所有字符
+#-d代表删除，[0-9]代表所有的数字，[: ]代表冒号和空格
+$ cat test.txt | tr -d "[0-9][: ]"
+Monday
+Tuesday
+Wednesday
+Thursday
+Friday
+Saturday
+Sunday
+ 
+5、利用-c进行补集的替换
+#有时候在文本中我们只知道要保留的一些字符，其他字符种类繁多，就可以使用补集的替换
+$ cat test.txt
+Monday     09:00
+Tuesday    09:10
+Wednesday  10:11
+Thursday   11:30
+Friday     08:00
+Saturday   07:40
+Sunday     10:00
+#我们只需要星期，则思路就是除了字母，其他统统替换掉
+#这里，-c：用换行符替换掉除了字母外的所有字符；-s：删除多余的换行符
+cat test.txt|tr -cs  "[a-z][A-Z]" "\n"
+Monday
+Tuesday
+Wednesday
+Thursday
+Friday
+Saturday
+Sunday
+#补集的删除，除了字母以及\n，其他的统统删掉
+#这里，-c：找补集，-d：删除数字及空格
+tr -cd '[a-zA-Z]\n' <test.txt
+总结：其中大小写字母的转换，删除不需要的字符比较常用。tr语法简单，易用!
+
+
+

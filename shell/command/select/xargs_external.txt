@@ -1,0 +1,468 @@
+XARGS(1)							      XARGS(1)
+
+
+
+NAME
+       xargs - build and execute command lines from standard input
+
+SYNOPSIS
+       xargs  [-0prtx]	[-E  eof-str] [-e[eof-str]] [--eof[=eof-str]] [--null]
+       [-d delimiter] [--delimiter delimiter]  [-I  replace-str]  [-i[replace-
+       str]]	[--replace[=replace-str]]   [-l[max-lines]]   [-L   max-lines]
+       [--max-lines[=max-lines]] [-n max-args] [--max-args=max-args] [-s  max-
+       chars]  [--max-chars=max-chars]	[-P max-procs] [--max-procs=max-procs]
+       [--interactive]	    [--verbose]	     [--exit]	   [--no-run-if-empty]
+       [--arg-file=file]   [--show-limits]   [--version]   [--help]   [command
+       [initial-arguments]]
+
+DESCRIPTION
+       This manual page documents the GNU version of xargs.  xargs reads items
+       from  the  standard  input, delimited by blanks (which can be protected
+       with double or single quotes or a backslash) or newlines, and  executes
+       the  command (default is /bin/echo) one or more times with any initial-
+       arguments followed by items read from standard input.  Blank  lines  on
+       the standard input are ignored.
+
+       Because	Unix  filenames	 can contain blanks and newlines, this default
+       behaviour is often problematic; filenames containing blanks and/or new-
+       lines  are  incorrectly	processed by xargs.  In these situations it is
+       better to use the -0 option, which prevents such problems.   When using
+       this option you will need to ensure that the program which produces the
+       input for xargs also uses a null character as  a	 separator.   If  that
+       program	is GNU find for example, the -print0 option does this for you.
+
+       If any invocation of the command exits with a status of 255, xargs will
+       stop  immediately  without reading any further input.  An error message
+       is issued on stderr when this happens.
+
+OPTIONS
+       --arg-file=file
+       -a file
+	      Read items from file instead of standard input.  If you use this
+	      option,  stdin  remains unchanged when commands are run.	Other-
+	      wise, stdin is redirected from /dev/null.
+
+       --null
+       -0     Input items are terminated by a null  character  instead	of  by
+	      whitespace,  and the quotes and backslash are not special (every
+	      character is taken literally).  Disables the end of file string,
+	      which  is	 treated  like	any other argument.  Useful when input
+	      items might contain white space, quote  marks,  or  backslashes.
+	      The  GNU	find  -print0  option produces input suitable for this
+	      mode.
+
+
+       --delimiter=delim
+       -d delim
+	      Input items are terminated by the specified  character.	Quotes
+	      and  backslash  are not special; every character in the input is
+	      taken literally.	Disables  the  end-of-file  string,  which  is
+	      treated  like any other argument.	 This can be used when the in-
+	      put consists of simply newline-separated items, although	it  is
+	      almost  always better to design your program to use --null where
+	      this is possible.	 The specified delimiter may be a single char-
+	      acter,  a	 C-style  character  escape such as \n, or an octal or
+	      hexadecimal escape code.	Octal and hexadecimal escape codes are
+	      understood as for the printf command.   Multibyte characters are
+	      not supported.
+
+
+       -E eof-str
+	      Set the end of file string to  eof-str.	If  the	 end  of  file
+	      string  occurs  as a line of input, the rest of the input is ig-
+	      nored.  If neither -E nor -e is used, no end of file  string  is
+	      used.
+
+       --eof[=eof-str]
+       -e[eof-str]
+	      This option is a synonym for the -E option.  Use -E instead, be-
+	      cause it is POSIX compliant while this option is not.   If  eof-
+	      str  is  omitted, there is no end of file string.	 If neither -E
+	      nor -e is used, no end of file string is used.
+
+       --help Print a summary of the options to xargs and exit.
+
+       -I replace-str
+	      Replace occurrences of replace-str in the initial-arguments with
+	      names  read  from	 standard input.  Also, unquoted blanks do not
+	      terminate input items; instead  the  separator  is  the  newline
+	      character.  Implies -x and -L 1.
+
+       --replace[=replace-str]
+       -i[replace-str]
+	      This  option  is	a  synonym for -Ireplace-str if replace-str is
+	      specified, and for -I{} otherwise.  This option  is  deprecated;
+	      use -I instead.
+
+       -L max-lines
+	      Use  at  most  max-lines	nonblank input lines per command line.
+	      Trailing blanks cause an input line to be logically continued on
+	      the next input line.  Implies -x.
+
+       --max-lines[=max-lines]
+       -l[max-lines]
+	      Synonym for the -L option.  Unlike -L, the max-lines argument is
+	      optional.	 If max-lines is not specified, it  defaults  to  one.
+	      The  -l  option is deprecated since the POSIX standard specifies
+	      -L instead.
+
+       --max-args=max-args
+       -n max-args
+	      Use at most max-args arguments per  command  line.   Fewer  than
+	      max-args	arguments will be used if the size (see the -s option)
+	      is exceeded, unless the -x option is given, in which case	 xargs
+	      will exit.
+
+       --interactive
+       -p     Prompt  the user about whether to run each command line and read
+	      a line from the terminal.	 Only run the command line if the  re-
+	      sponse starts with ‘y’ or ‘Y’.  Implies -t.
+
+       --no-run-if-empty
+       -r     If the standard input does not contain any nonblanks, do not run
+	      the command.  Normally, the command is run once even if there is
+	      no input.	 This option is a GNU extension.
+
+       --max-chars=max-chars
+       -s max-chars
+	      Use at most max-chars characters per command line, including the
+	      command and initial-arguments and the terminating nulls  at  the
+	      ends of the argument strings.  The largest allowed value is sys-
+	      tem-dependent, and is calculated as the  argument	 length	 limit
+	      for  exec, less the size of your environment, less 2048 bytes of
+	      headroom.	 If this value is more than 128KiB, 128Kib is used  as
+	      the  default value; otherwise, the default value is the maximum.
+	      1KiB is 1024 bytes.
+
+       --verbose
+       -t     Print the command line on the standard error output before  exe-
+	      cuting it.
+
+       --version
+	      Print the version number of xargs and exit.
+
+       --show-limits
+	      Display  the limits on the command-line length which are imposed
+	      by the operating system, xargs’ choice of buffer size and the -s
+	      option.	Pipe  the  input  from	/dev/null (and perhaps specify
+	      --no-run-if-empty) if you don’t want xargs to do anything.
+
+       --exit
+       -x     Exit if the size (see the -s option) is exceeded.
+
+       --max-procs=max-procs
+       -P max-procs
+	      Run up to max-procs processes at a time; the default is  1.   If
+	      max-procs	 is 0, xargs will run as many processes as possible at
+	      a time.  Use the -n option with -P; otherwise chances  are  that
+	      only one exec will be done.
+
+EXAMPLES
+       find /tmp -name core -type f -print | xargs /bin/rm -f
+
+       Find  files  named core in or below the directory /tmp and delete them.
+       Note that this will work incorrectly if there are  any  filenames  con-
+       taining newlines or spaces.
+
+       find /tmp -name core -type f -print0 | xargs -0 /bin/rm -f
+
+       Find  files  named core in or below the directory /tmp and delete them,
+       processing filenames in such a way that file or	directory  names  con-
+       taining spaces or newlines are correctly handled.
+
+
+       find /tmp -depth -name core -type f -delete
+
+       Find  files  named core in or below the directory /tmp and delete them,
+       but more efficiently than in the previous example (because we avoid the
+       need  to use fork(2) and exec(2) to launch rm and we don’t need the ex-
+       tra xargs process).
+
+
+       cut -d: -f1 < /etc/passwd | sort | xargs echo
+
+       Generates a compact listing of all the users on the system.
+
+
+       xargs sh -c ’emacs "$@" < /dev/tty’ emacs
+
+       Launches the minimum number of copies of Emacs needed,  one  after  the
+       other, to edit the files listed on xargs’ standard input.  This example
+       achieves the same effect as BSD’s -o option, but in a more flexible and
+       portable way.
+
+
+
+
+EXIT STATUS
+       xargs exits with the following status:
+       0 if it succeeds
+       123 if any invocation of the command exited with status 1-125
+       124 if the command exited with status 255
+       125 if the command is killed by a signal
+       126 if the command cannot be run
+       127 if the command is not found
+       1 if some other error occurred.
+
+       Exit  codes  greater  than 128 are used by the shell to indicate that a
+       program died due to a fatal signal.
+
+STANDARDS CONFORMANCE
+       As of GNU xargs version 4.2.9, the default behaviour of xargs is not to
+       have  a	logical end-of-file marker.  POSIX (IEEE Std 1003.1, 2004 Edi-
+       tion) allows this.
+
+       The -l and -i options appear in the 1997 version of the POSIX standard,
+       but  do	not appear in the 2004 version of the standard.	 Therefore you
+       should use -L and -I instead, respectively.
+
+       The POSIX standard allows implementations to have a limit on  the  size
+       of arguments to the exec functions.  This limit could be as low as 4096
+       bytes including the  size  of  the  environment.	  For  scripts	to  be
+       portable,  they must not rely on a larger value.	 However, I know of no
+       implementation whose actual limit is that small.	 The --show-limits op-
+       tion  can be used to discover the actual limits in force on the current
+       system.
+
+
+
+SEE ALSO
+       find(1), locate(1), locatedb(5), updatedb(1), fork(2), execvp(3), Find-
+       ing Files (on-line in Info, or printed)
+
+BUGS
+       The  -L	option	is incompatible with the -I option, but perhaps should
+       not be.
+
+       It is not possible for xargs to be used securely, since there will  al-
+       ways  be	 a  time gap between the production of the list of input files
+       and their use in the commands that xargs issues.	 If other  users  have
+       access  to  the	system, they can manipulate the filesystem during this
+       time window to force the action of the commands xargs runs to apply  to
+       files  that  you didn’t intend.	For a more detailed discussion of this
+       and related problems, please refer to the  ‘‘Security  Considerations’’
+       chapter in the findutils Texinfo documentation.	The -execdir option of
+       find can often be used as a more secure alternative.
+
+       When you use the -I option, each line read from the input  is  buffered
+       internally.    This means that there is an upper limit on the length of
+       input line that xargs will accept when used with	 the  -I  option.   To
+       work  around this limitation, you can use the -s option to increase the
+       amount of buffer space that xargs uses, and you can also use  an	 extra
+       invocation  of  xargs to ensure that very long lines do not occur.  For
+       example:
+
+       somecommand | xargs -s 50000 echo | xargs -I ’{}’ -s 100000 rm ’{}’
+
+       Here, the first invocation of xargs has no input line length limit  be-
+       cause  it  doesn’t  use	the -i option.	The second invocation of xargs
+       does have such a limit, but we have ensured that the it	never  encoun-
+       ters  a line which is longer than it can handle.	  This is not an ideal
+       solution.  Instead, the -i option should not impose a line length  lim-
+       it,  which  is  why  this  discussion appears in the BUGS section.  The
+       problem doesn’t occur with the output of find(1) because it emits  just
+       one filename per line.
+
+       The  best  way  to  report  a  bug  is to use the form at http://savan-
+       nah.gnu.org/bugs/?group=findutils.  The reason for  this	 is  that  you
+       will then be able to track progress in fixing the problem.   Other com-
+       ments about xargs(1) and about the findutils package in general can  be
+       sent  to	 the bug-findutils mailing list.  To join the list, send email
+       to bug-findutils-request@gnu.org.
+
+
+
+								      XARGS(1)
+									  
+									  
+1. 简介
+
+  之所以能用到这个命令，是由于很多命令不支持|管道来传递参数，而日常工作中有这个必要，所以就有了xargs命令，例如：
+
+find /sbin -perm +700 |ls -l         这个命令是错误的
+
+find /sbin -perm +700 |xargs ls -l   这样才是正确的
+
+xargs 可以读入 stdin 的资料，并且以空白字元或断行字元作为分辨，将 stdin 的资料分隔成为 arguments 。 
+因为是以空白字元作为分隔，所以，如果有一些档名或者是其他意义的名词内含有空白字元的时候， xargs 可能就会误判了
+
+2. 选项解释
+-a file 从文件中读入作为sdtin，
+
+-e flag ，注意有的时候可能会是-E，flag必须是一个以空格分隔的标志，当xargs分析到含有flag这个标志的时候就停止。
+
+-p 当每次执行一个argument的时候询问一次用户。
+
+-n num 后面加次数，表示命令在执行的时候一次用的argument的个数，默认是用所有的。
+
+-t 表示先打印命令，然后再执行。
+
+-i 或者是-I，这得看linux支持了，将xargs的每项名称，一般是一行一行赋值给{}，可以用{}代替。
+
+-r no-run-if-empty 当xargs的输入为空的时候则停止xargs，不用再去执行了。
+
+-s num 命令行的最大字符数，指的是xargs后面那个命令的最大命令行字符数。
+
+-L  num Use at most max-lines nonblank input lines per command line.-s是含有空格的。
+
+-l  同-L
+
+-d delim 分隔符，默认的xargs分隔符是回车，argument的分隔符是空格，这里修改的是xargs的分隔符。
+
+-x exit的意思，主要是配合-s使用。
+
+-P 修改最大的进程数，默认是1，为0时候为as many as it can ，这个例子我没有想到，应该平时都用不到的吧。
+
+-0 ：当sdtin含有特殊字元时候，将其当成一般字符，像/'空格等
+$ echo "/ /  "|xargs echo
+/ /
+$ echo "/ /  "|xargs -0 echo
+/ /  
+
+
+3. 应用举例
+
+-a file 从文件中读入作为sdtin
+
+$ cat 1.txt 
+aaa  bbb ccc ddd
+a    b
+$ xargs -a 1.txt echo
+aaa bbb ccc ddd a b
+
+
+-e flag ，注意有的时候可能会是-E，flag必须是一个以空格分隔的标志，当xargs分析到含有flag这个标志的时候就停止。
+
+$ xargs -E 'ddd'  -a 1.txt echo
+aaa bbb ccc
+
+$ cat 1.txt |xargs -E 'ddd' echo
+aaa bbb ccc
+
+-n num 后面加次数，表示命令在执行的时候一次用的argument的个数，默认是用所有的。
+
+$ cat 1.txt |xargs -n 2 echo
+aaa bbb
+ccc ddd
+a b
+
+-p 操作具有可交互性，每次执行comand都交互式提示用户选择，当每次执行一个argument的时候询问一次用户
+
+$ cat 1.txt |xargs -p echo
+echo aaa bbb ccc ddd a b ?...y
+aaa bbb ccc ddd a b
+$ cat 1.txt |xargs -p echo
+echo aaa bbb ccc ddd a b ?...n
+
+
+-t 表示先打印命令，然后再执行。
+
+$ cat 1.txt |xargs -t echo
+echo aaa bbb ccc ddd a b 
+aaa bbb ccc ddd a b
+
+
+-i 或者是-I，这得看linux支持了，将xargs的每项名称，一般是一行一行赋值给{}，可以用{}代替。
+
+$ ls
+1.txt  2.txt  3.txt  log.xml
+$ ls *.txt |xargs -t -i mv {} {}.bak
+mv 1.txt 1.txt.bak 
+mv 2.txt 2.txt.bak 
+mv 3.txt 3.txt.bak 
+
+注意，-I 必须指定替换字符　－i 是否指定替换字符-可选
+find . | xargs -I {} cp {} $D_PATH
+与
+find . | xargs -i cp {} $D_PATH 
+
+注意：cshell和tcshell中，需要将{}用单引号、双引号或反斜杠，否则不认识。bash可以不用。
+find /shell -maxdepth 2 -name a -print | xargs -t -i sed -i '1 i\111' ‘{}‘
+
+
+-r  no-run-if-empty 如果没有要处理的参数传递给xargs，xargs 默认是带 空参数运行一次，如果你希望无参数时，
+停止 xargs，直接退出，使用 -r 选项即可，其可以防止xargs 后面命令带空参数运行报错。
+
+
+$ echo ""|xargs -t mv
+mv 
+mv: missing file operand
+Try `mv --help' for more information.
+$ echo ""|xargs -t -r mv         #直接退出
+
+-s num xargs后面那个命令的最大命令行字符数(含空格) 
+$ cat 1.txt.bak |xargs  -s 9 echo
+aaa
+bbb
+ccc
+ddd
+a b
+$ cat 1.txt.bak |xargs  -s 4 echo
+xargs: can not fit single argument within argument list size limit      #length(echo)=4
+$ cat 1.txt.bak |xargs  -s 8 echo
+xargs: argument line too long      #length(echo)=4,length(aaa)=3,length(null)=1,total_length=8
+
+
+-L  从标准输入一次读取num行送给Command命令 ，-l和-L功能一样
+$ cat 1.txt.bak 
+aaa bbb ccc ddd
+a b
+ccc
+dsds
+$ cat 1.txt.bak |xargs  -L 4 echo
+aaa bbb ccc ddd a b ccc dsds
+$ cat 1.txt.bak |xargs  -L 1 echo
+aaa bbb ccc ddd
+a b
+ccc
+dsds
+
+
+-d delim 分隔符，默认的xargs分隔符是回车，argument的分隔符是空格，这里修改的是xargs的分隔符
+$ cat 1.txt.bak 
+aaa@ bbb ccc@ ddd
+a b
+
+$ cat 1.txt.bak |xargs  -d '@' echo
+aaa  bbb ccc  ddd
+a b
+-x exit的意思，如果有任何 Command 行大于 -s Size 标志指定的字节数，停止运行 xargs 命令，-L -I -n 默认打开-x参数，主要是配合-s使用
+-P 修改最大的进程数，默认是1，为0时候为as many as it can 。
+
+
+xargs和find
+在 使用find命令的-exec选项处理匹配到的文件时， find命令将所有匹配到的文件一起传递给exec执行。
+但有些系统对能够传递给exec的命令长度有限制，这样在find命令运行几分钟之后，就会出现 溢出错误。
+错误信息通常是“参数列太长”或“参数列溢出”。这就是xargs命令的用处所在，特别是与find命令一起使用。
+find命令把匹配到的文件 传递给xargs命令，而xargs命令每次只获取一部分文件而不是全部，不像-exec选项那样。
+这样它可以先处理最先获取的一部分文件，然后是下一 批，并如此继续下去。
+
+在有些系统中，使用-exec选项会 为处理每一个匹配到的文件而发起一个相应的进程，并非将匹配到的文件全部作为参数一次执行；
+这样在有些情况下就会出现进程过多，系统性能下降的问题，因而 效率不高；而使用xargs命令则只有一个进程。
+另外，在使用xargs命令时，究竟是一次获取所有的参数，还是分批取得参数，以及每一次获取参数的数目 都会根据该命令的选项及系统内核中相应的可调参数来确定。
+
+管 道是把一个命令的输出传递给另一个命令作为输入，比如：command1 | command2但是command2仅仅把输出的内容作为输入参数。
+find . -name "install.log" -print打印出的是install.log这个字符串，
+如果仅仅使用管道，那么command2能够使用的仅仅是install.log这个字符串， 不能把它当作文件来进行处理。
+
+当然这个command2除了xargs。xargs就是为了能够对find搜索到的文件进行操作而编写的。它能把管道传来的字符串当作文件交给其后的命令执行。
+举个例子：
+$find . -name "install.log" -print | cat
+./install.log                                                 #显示从管道传来的内容，仅仅作为字符串来处理
+$find . -name "install.log" -print | xargs cat
+aaaaaa                                                      #将管道传来的内容作为文件，交给cat执行。
+也就是说，该命令执行的是如果存在install.log，那么就打印出这个文件的内容。
+来看看xargs命令是如何同find命令一起使用的，并给出一些例子。 
+
+1、在当前目录下查找所有用户具有读、写和执行权限的文件，并收回相应的写权限：
+# find . -perm -7 -print | xargs chmod o-w
+2、查找系统中的每一个普通文件，然后使用xargs命令来测试它们分别属于哪类文件
+# find . -type f -print | xargs file
+./liyao: empty 
+3、尝试用rm 删除太多的文件，你可能得到一个错误信息：/bin/rm Argument list too long. 用xargs 去避免这个问题
+$find ~ -name ‘*.log’ -print0 | xargs -i -0 rm -f {}
+
+4、查找所有的jpg 文件，并且压缩它
+# find / -name *.jpg -type f -print | xargs tar -cvzf images.tar.gz
+5、拷贝所有的图片文件到一个外部的硬盘驱动 
+# ls *.jpg | xargs -n1 -i cp {} /external-hard-drive/directory

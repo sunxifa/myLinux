@@ -1,0 +1,105 @@
+SPLIT(1)			 User Commands			      SPLIT(1)
+
+
+
+NAME
+       split - split a file into pieces
+
+SYNOPSIS
+       split [OPTION]... [INPUT [PREFIX]]
+
+DESCRIPTION
+       Output  fixed-size  pieces of INPUT to PREFIXaa, PREFIXab, ...; default
+       size is 1000 lines, and default PREFIX is ‘x’.  With no INPUT, or  when
+       INPUT is -, read standard input.
+
+       Mandatory  arguments  to	 long  options are mandatory for short options
+       too.
+
+       -a, --suffix-length=N
+	      use suffixes of length N (default 2)
+
+       -b, --bytes=SIZE
+	      put SIZE bytes per output file
+
+       -C, --line-bytes=SIZE
+	      put at most SIZE bytes of lines per output file
+
+       -d, --numeric-suffixes
+	      use numeric suffixes instead of alphabetic
+
+       -l, --lines=NUMBER
+	      put NUMBER lines per output file
+
+       --verbose
+	      print a diagnostic just before each output file is opened
+
+       --help display this help and exit
+
+       --version
+	      output version information and exit
+
+       SIZE may be (or may be an integer optionally followed by) one  of  fol-
+       lowing: KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on for G, T,
+       P, E, Z, Y.
+
+AUTHOR
+       Written by Torbjorn Granlund and Richard M. Stallman.
+
+REPORTING BUGS
+       Report split bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report split translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright © 2010 Free Software Foundation, Inc.	 License  GPLv3+:  GNU
+       GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
+       This  is	 free  software:  you  are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       The full documentation for split is maintained as a Texinfo manual.  If
+       the  info  and  split programs are properly installed at your site, the
+       command
+
+	      info coreutils 'split invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.4		   May 2011			      SPLIT(1)
+
+
+
+
+
+[dmtsai@study ~]$ split [-bl] file PREFIX
+選項與參數：
+-b  ：後面可接欲分割成的檔案大小，可加單位，例如 b, k, m 等；
+-l  ：以行數來進行分割。
+PREFIX ：代表前置字元的意思，可作為分割檔案的前導文字。
+
+範例一：我的 /etc/services 有六百多K，若想要分成 300K 一個檔案時？
+[dmtsai@study ~]$ cd /tmp; split -b 300k /etc/services services
+[dmtsai@study tmp]$ ll -k services*
+-rw-rw-r--. 1 dmtsai dmtsai 307200 Jul  9 22:52 servicesaa
+-rw-rw-r--. 1 dmtsai dmtsai 307200 Jul  9 22:52 servicesab
+-rw-rw-r--. 1 dmtsai dmtsai  55893 Jul  9 22:52 servicesac
+# 那個檔名可以隨意取的啦！我們只要寫上前導文字，小檔案就會以
+# xxxaa, xxxab, xxxac 等方式來建立小檔案的！
+
+範例二：如何將上面的三個小檔案合成一個檔案，檔名為 servicesback
+[dmtsai@study tmp]$ cat services* >> servicesback
+# 很簡單吧？就用資料流重導向就好啦！簡單！
+
+範例三：使用 ls -al / 輸出的資訊中，每十行記錄成一個檔案
+[dmtsai@study tmp]$ ls -al / | split -l 10 - lsroot
+[dmtsai@study tmp]$ wc -l lsroot*
+  10 lsrootaa
+  10 lsrootab
+   4 lsrootac
+  24 total
+# 重點在那個 - 啦！一般來說，如果需要 stdout/stdin 時，但偏偏又沒有檔案，
+# 有的只是 - 時，那麼那個 - 就會被當成 stdin 或 stdout ～

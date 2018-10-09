@@ -1,0 +1,75 @@
+PASTE(1)			 User Commands			      PASTE(1)
+
+
+
+NAME
+       paste - merge lines of files
+
+SYNOPSIS
+       paste [OPTION]... [FILE]...
+
+DESCRIPTION
+       Write  lines  consisting	 of  the sequentially corresponding lines from
+       each FILE, separated by TABs, to standard output.   With	 no  FILE,  or
+       when FILE is -, read standard input.
+
+       Mandatory  arguments  to	 long  options are mandatory for short options
+       too.
+
+       -d, --delimiters=LIST
+	      reuse characters from LIST instead of TABs
+
+       -s, --serial
+	      paste one file at a time instead of in parallel
+
+       --help display this help and exit
+
+       --version
+	      output version information and exit
+
+AUTHOR
+       Written by David M. Ihnat and David MacKenzie.
+
+REPORTING BUGS
+       Report paste bugs to bug-coreutils@gnu.org
+       GNU coreutils home page: <http://www.gnu.org/software/coreutils/>
+       General help using GNU software: <http://www.gnu.org/gethelp/>
+       Report paste translation bugs to <http://translationproject.org/team/>
+
+COPYRIGHT
+       Copyright © 2010 Free Software Foundation, Inc.	 License  GPLv3+:  GNU
+       GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
+       This  is	 free  software:  you  are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       The full documentation for paste is maintained as a Texinfo manual.  If
+       the  info  and  paste programs are properly installed at your site, the
+       command
+
+	      info coreutils 'paste invocation'
+
+       should give you access to the complete manual.
+
+
+
+GNU coreutils 8.4		   May 2011			      PASTE(1)
+
+
+
+這個 paste 就要比 join 簡單多了！相對於 join 必須要比對兩個檔案的資料相關性， paste 就直接『將兩行貼在一起，且中間以 [tab] 鍵隔開』而已！
+[dmtsai@study ~]$ paste [-d] file1 file2
+選項與參數：
+-d  ：後面可以接分隔字元。預設是以 [tab] 來分隔的！
+-   ：如果 file 部分寫成 - ，表示來自 standard input 的資料的意思。
+
+範例一：用 root 身份，將 /etc/passwd 與 /etc/shadow 同一行貼在一起
+[root@study ~]# paste /etc/passwd /etc/shadow
+root:x:0:0:root:/root:/bin/bash root:$6$wtbCCce/PxMeE5wm$KE2IfSJr...:16559:0:99999:7:::
+bin:x:1:1:bin:/bin:/sbin/nologin        bin:*:16372:0:99999:7:::
+daemon:x:2:2:daemon:/sbin:/sbin/nologin daemon:*:16372:0:99999:7:::
+# 注意喔！同一行中間是以 [tab] 按鍵隔開的！
+
+範例二：先將 /etc/group 讀出(用 cat)，然後與範例一貼上一起！且僅取出前三行
+[root@study ~]# cat /etc/group|paste /etc/passwd /etc/shadow -|head -n 3
+# 這個例子的重點在那個 - 的使用！那玩意兒常常代表 stdin 喔！

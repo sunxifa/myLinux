@@ -1,0 +1,76 @@
+扩展的正则表达式.  增加了一些元字符到上面提到的基本的元字符集合里.  它们在 egrep,awk,和 Perl 中使用. 
+ 
+问号    -- ? --  匹配零或一个前面的字符.  它一般用于匹配单个字符. 
+ 
+加号    -- + --  匹配一个或多个前面的字符.它的作用和*很相似,但唯一的区别是它不 
+      匹配零个字符的情况. 
+ 
+          1 # GNU  版本的  sed  和  awk  可以使用"+", 
+          2 #  但它应该转义一下. 
+          3   
+          4 echo a111b | sed -ne '/a1\+b/p' 
+          5 echo a111b | grep 'a1\+b' 
+          6 echo a111b | gawk '/a1+b/' 
+          7 #  上面三句都是等价的效果. 
+          8   
+          9 #  多谢, S.C. 
+ 
+转义"大括号" -- \{ \} --  指示前面正则表达式匹配的次数. 
+        要转义是因为不转义的话大括号只是表示他们字面上的意思.这个用法只是 
+        技巧上的而不是基本正则表达式的内容. 
+ 
+        "[0-9]\{5\}"  精确匹配 5 个数字  (从  0  到  9 的数字). 
+ 
+        注意:  大括号不能在“经典”(不是 POSIX 兼容)的正则表达式版本的 awk 中 
+            使用.  然而, gawk  有一个选项--re-interval 来允许使用大括号 
+            (不必转义).    
+              bash$ echo 2222 | gawk --re-interval '/2{3}/' 
+              2222 
+ 
+            Perl 和一些 egrep 版本不要求转义大括号. 
+ 
+圆括号    -- ( ) --  括起一组正则表达式.  它和下面要讲的"|"操作符或在用 expr 进行子字 
+      符串提取(substring extraction)一起使用很有用. 
+ 
+竖线    -- | -- "或"正则操作符用于匹配一组可选的字符. 
+ 
+        bash$ egrep 're(a|e)d' misc.txt 
+        People who read seem to be better informed than those who do not. 
+        The clarinet produces sound by the vibration of its reed. 
+ 
+      注意:  一些 sed, ed,  和 ex 的版本像 GNU 的软件版本一样支持上面描述的扩展正 
+          则表达式的版本.   
+ 
+POSIX 字符类.  [:class:] 
+        这是另外一个可选的用于指定匹配字符范围的方法. 
+ 
+[:alnum:]  匹配字母和数字.等同于 A-Za-z0-9. 
+ 
+[:alpha:] 匹配字母.  等同于 A-Za-z. 
+ 
+[:blank:] 匹配一个空格或是一个制表符(tab). 
+ 
+[:cntrl:]  匹配控制字符. 
+ 
+[:digit:]  匹配(十进制)数字.  等同于 0-9. 
+ 
+[:graph:]  (可打印的图形字符).  匹配  ASCII  码值的 33 - 126 之间的字符.  这和下面提到的 
+      [:print:]一样,但是不包括空格字符. 
+ 
+[:lower:] 匹配小写字母.  等同于 a-z. 
+ 
+[:print:]  (可打印字符).  匹配  ASCII 码值  32 - 126 之间的字符.  这和上面提到的一样 
+      [:graph:],但是增多一个空格字符. 
+ 
+[:space:] 匹配空白字符  (空格符和水平制表符). 
+ 
+[:upper:]  匹配大写字母.  等同于 A-Z. 
+ 
+[:xdigit:] 匹配十六进制数字.  等同于 0-9A-Fa-f.  
+注意:  POSIX 字符类一般都要求用引号或是双方括号 double brackets ([[ ]])引起来. 
+      bash$ grep [[:digit:]] test.file 
+      abc=723 
+ 
+    这些字符类在一个受限的范围内甚至可能用在能用在通配(globbing)中. 
+      bash$ ls -l ?[[:digit:]][[:digit:]]? 
+      -rw-rw-r--        1 bozo    bozo                  0 Aug 21 14:47 a33b 
