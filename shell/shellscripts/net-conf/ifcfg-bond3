@@ -1,0 +1,4 @@
+DEVICE=bond3
+BOOTPROTO=none
+ONBOOT=yes
+TYPE=Ethernet

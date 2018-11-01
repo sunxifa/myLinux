@@ -1,0 +1,6 @@
+DEVICE=em3
+BOOTPROTO="none"
+ONBOOT="yes"
+TYPE="Ethernet"
+MASTER=bond0
+SLAVE=yes

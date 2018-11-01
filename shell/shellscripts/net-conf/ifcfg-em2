@@ -1,0 +1,6 @@
+DEVICE=em2
+BOOTPROTO=none
+ONBOOT=no
+USERCTL=no
+MASTER=bond0
+SLAVE=yes

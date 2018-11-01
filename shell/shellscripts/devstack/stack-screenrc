@@ -1,0 +1,84 @@
+sessionname stack
+hardstatus alwayslastline '%{= .} %-Lw%{= .}%> %n%f %t*%{= .}%+Lw%< %-=%{g}(%{d}%H/%l%{g})'
+setenv PROMPT_COMMAND /bin/true
+screen -t shell bash
+screen -t key bash
+stuff "sudo tail -f /var/log/apache2/keystone.log"
+logfile /opt/stack/logs/key.log.2017-03-31-004937
+log on
+screen -t key-access bash
+stuff "sudo tail -f /var/log/apache2/keystone_access.log"
+logfile /opt/stack/logs/key-access.log.2017-03-31-004937
+log on
+screen -t g-reg bash
+stuff "/usr/local/bin/glance-registry --config-file=/etc/glance/glance-registry.conf"
+logfile /opt/stack/logs/g-reg.log.2017-03-31-004937
+log on
+screen -t g-api bash
+stuff "/usr/local/bin/glance-api --config-file=/etc/glance/glance-api.conf"
+logfile /opt/stack/logs/g-api.log.2017-03-31-004937
+log on
+screen -t n-api bash
+stuff "/usr/local/bin/nova-api"
+logfile /opt/stack/logs/n-api.log.2017-03-31-004937
+log on
+screen -t q-svc bash
+stuff "/usr/local/bin/neutron-server --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini"
+logfile /opt/stack/logs/q-svc.log.2017-03-31-004937
+log on
+screen -t q-agt bash
+stuff "/usr/local/bin/neutron-openvswitch-agent --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini"
+logfile /opt/stack/logs/q-agt.log.2017-03-31-004937
+log on
+screen -t q-dhcp bash
+stuff "/usr/local/bin/neutron-dhcp-agent --config-file /etc/neutron/neutron.conf --config-file=/etc/neutron/dhcp_agent.ini"
+logfile /opt/stack/logs/q-dhcp.log.2017-03-31-004937
+log on
+screen -t q-l3 bash
+stuff "/usr/local/bin/neutron-l3-agent --config-file /etc/neutron/neutron.conf --config-file=/etc/neutron/l3_agent.ini --config-file /etc/neutron/fwaas_driver.ini"
+logfile /opt/stack/logs/q-l3.log.2017-03-31-004937
+log on
+screen -t q-meta bash
+stuff "/usr/local/bin/neutron-metadata-agent --config-file /etc/neutron/neutron.conf --config-file=/etc/neutron/metadata_agent.ini"
+logfile /opt/stack/logs/q-meta.log.2017-03-31-004937
+log on
+screen -t q-lbaas bash
+stuff "/usr/local/bin/neutron-lbaas-agent --config-file /etc/neutron/neutron.conf --config-file=/etc/neutron/services/loadbalancer/haproxy/lbaas_agent.ini"
+logfile /opt/stack/logs/q-lbaas.log.2017-03-31-004937
+log on
+screen -t n-cond bash
+stuff "/usr/local/bin/nova-conductor --config-file /etc/nova/nova.conf"
+logfile /opt/stack/logs/n-cond.log.2017-03-31-004937
+log on
+screen -t n-sch bash
+stuff "/usr/local/bin/nova-scheduler --config-file /etc/nova/nova.conf"
+logfile /opt/stack/logs/n-sch.log.2017-03-31-004937
+log on
+screen -t n-novnc bash
+stuff "/usr/local/bin/nova-novncproxy --config-file /etc/nova/nova.conf --web /opt/stack/noVNC"
+logfile /opt/stack/logs/n-novnc.log.2017-03-31-004937
+log on
+screen -t n-cauth bash
+stuff "/usr/local/bin/nova-consoleauth --config-file /etc/nova/nova.conf"
+logfile /opt/stack/logs/n-cauth.log.2017-03-31-004937
+log on
+screen -t n-cpu bash
+stuff "sg libvirtd '/usr/local/bin/nova-compute --config-file /etc/nova/nova.conf'"
+logfile /opt/stack/logs/n-cpu.log.2017-03-31-004937
+log on
+screen -t c-api bash
+stuff "/usr/local/bin/cinder-api --config-file /etc/cinder/cinder.conf"
+logfile /opt/stack/logs/c-api.log.2017-03-31-004937
+log on
+screen -t c-sch bash
+stuff "/usr/local/bin/cinder-scheduler --config-file /etc/cinder/cinder.conf"
+logfile /opt/stack/logs/c-sch.log.2017-03-31-004937
+log on
+screen -t c-vol bash
+stuff "/usr/local/bin/cinder-volume --config-file /etc/cinder/cinder.conf"
+logfile /opt/stack/logs/c-vol.log.2017-03-31-004937
+log on
+screen -t horizon bash
+stuff "sudo tail -f /var/log/apache2/horizon_error.log"
+logfile /opt/stack/logs/horizon.log.2017-03-31-004937
+log on

@@ -1,0 +1,6 @@
+DEVICE=p3p2
+BOOTPROTO="none"
+ONBOOT="yes"
+TYPE="Ethernet"
+MASTER=bond1
+SLAVE=yes

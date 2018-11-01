@@ -1,0 +1,13 @@
+# OpenStack USER ID = 4195ddb90a2b42c5bdff60f492d4bb9a
+export OS_USERNAME="admin"
+# OpenStack project ID = 284dcdd8fc62431e8dbccb6db437a40d
+export OS_PROJECT_NAME="alt_demo"
+export OS_AUTH_URL="http://192.168.179.128:35357"
+export OS_CACERT=""
+export NOVA_CERT="/home/mitaka/devstack/accrc/cacert.pem"
+export OS_AUTH_TYPE=v2password
+export OS_PASSWORD="admin"
+export OS_USER_DOMAIN_ID=default
+unset OS_USER_DOMAIN_NAME
+export OS_PROJECT_DOMAIN_ID=default
+unset OS_PROJECT_DOMAIN_NAME

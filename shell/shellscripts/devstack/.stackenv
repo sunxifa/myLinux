@@ -1,0 +1,17 @@
+# 2017-03-31-012549 
+BASE_SQL_CONN=mysql+pymysql://root:secret@127.0.0.1
+DATA_DIR=/opt/stack/data
+DEST=/opt/stack
+ENABLED_SERVICES=key,n-api,n-cpu,n-cond,n-sch,n-novnc,n-cauth,g-api,g-reg,c-sch,c-api,c-vol,horizon,rabbit,tempest,mysql,dstat,q-svc,q-agt,q-dhcp,q-l3,q-meta,neutron,q-lbaas,q-fwaas,q-vpn
+HOST_IP=192.168.179.128
+KEYSTONE_AUTH_PROTOCOL=http
+KEYSTONE_AUTH_URI=http://192.168.179.128:35357
+KEYSTONE_SERVICE_URI=http://192.168.179.128:5000
+LOGFILE=/opt/stack/logs/stack.sh.log.2017-03-31-004937
+OS_CACERT=
+SERVICE_HOST=192.168.179.128
+SERVICE_PROTOCOL=http
+STACK_USER=stack
+TLS_IP=
+HOST_IPV6=::1
+SERVICE_IP_VERSION=4
